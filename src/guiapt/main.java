@@ -46,6 +46,7 @@ import javax.swing.JViewport;
  */
 public class main extends javax.swing.JFrame {
 
+    private javax.swing.Timer listingTimer;
     int action;
     volatile boolean cancelListing = false;
     Process currentProcess = null;
@@ -543,12 +544,14 @@ public class main extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> localpackages.setEnabled(true));
                 SwingUtilities.invokeLater(() -> localpackages.setForeground(Color.BLACK));
 
-                javax.swing.Timer t = new javax.swing.Timer(1000, e -> {
-                    jProgressBar1.hide();
+                listingTimer = new javax.swing.Timer(1000, e -> {
+                    jProgressBar1.setVisible(false);
+                    jProgressBar1.revalidate();
+                    jProgressBar1.repaint();
                     status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
                 });
-                t.setRepeats(false);
-                t.start();
+                listingTimer.setRepeats(false);
+                listingTimer.start();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -654,7 +657,9 @@ public class main extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> onlinepackages.setForeground(Color.BLACK));
 
                 javax.swing.Timer t = new javax.swing.Timer(1000, e -> {
-                    jProgressBar1.hide();
+                    jProgressBar1.setVisible(false);
+                    jProgressBar1.revalidate();
+                    jProgressBar1.repaint();
                     status.setText("Total pacakges: " + onlinepackages.getModel().getRowCount());
                 });
                 t.setRepeats(false);
@@ -961,6 +966,9 @@ public class main extends javax.swing.JFrame {
                 throw new RuntimeException("Invalid option " + arg + ". Cannot proceed");
 
         }
+        if (listingTimer != null && listingTimer.isRunning()) {
+            listingTimer.stop();
+        }
         SwingUtilities.invokeLater(() -> {
             jProgressBar1.setValue(0);
             jProgressBar1.setIndeterminate(true);
@@ -1044,8 +1052,14 @@ public class main extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> jTabbedPane1.setEnabledAt(0, true));
                 SwingUtilities.invokeLater(() -> jTabbedPane1.setEnabledAt(1, true));
                 javax.swing.Timer t = new javax.swing.Timer(1000, e -> {
-                    jProgressBar1.hide();
-                    status.setText("Oparation finished");
+                    jProgressBar1.setIndeterminate(false);
+                    jProgressBar1.setValue(0);
+                    jProgressBar1.setVisible(false);
+
+                    dpkgProgressStarted = false;
+                    lastPercent = -1;
+
+                    status.setText("Operation finished");
                 });
                 t.setRepeats(false);
                 t.start();
@@ -1053,6 +1067,7 @@ public class main extends javax.swing.JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
+
                 if (arg.equals("install") || arg.equals("remove")) {
                     DefaultTableModel from;
                     DefaultTableModel to;
