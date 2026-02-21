@@ -961,9 +961,10 @@ public class main extends javax.swing.JFrame {
                 throw new RuntimeException("Invalid option " + arg + ". Cannot proceed");
 
         }
-        SwingUtilities.invokeLater(()
-                -> {
+        SwingUtilities.invokeLater(() -> {
+            jProgressBar1.setValue(0);
             jProgressBar1.setIndeterminate(true);
+            jProgressBar1.setVisible(true);
             jTabbedPane1.setEnabledAt(0, false);
             jTabbedPane1.setEnabledAt(1, false);
             jTabbedPane1.setSelectedIndex(2);
@@ -1877,7 +1878,7 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_jTabbedPane1MouseClicked
 
     private void categories2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories2MouseClicked
-         refreshopt.setEnabled(true);
+        refreshopt.setEnabled(true);
         try {
             if (currentProcess != null) {
                 currentProcess.destroyForcibly();
@@ -1892,7 +1893,7 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_categories2MouseClicked
 
     private void categories2ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_categories2ValueChanged
-       
+
     }//GEN-LAST:event_categories2ValueChanged
 
     private void refreshoptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshoptActionPerformed
