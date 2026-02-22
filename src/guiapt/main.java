@@ -1219,7 +1219,7 @@ public class main extends javax.swing.JFrame {
         checked.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         checked.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
-        ok.setText("     OK    ");
+        ok.setText("    OK    ");
         ok.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okActionPerformed(evt);
