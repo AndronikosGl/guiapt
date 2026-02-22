@@ -362,7 +362,7 @@ public class main extends javax.swing.JFrame {
 
     }
 
-    void dependends(String action) throws IOException{
+    void dependends(String action) throws IOException {
         new Thread(() -> {
             try {
                 String pkgs = action.equals("remove") ? getCheckedLocal() : getChecked();
@@ -425,7 +425,7 @@ public class main extends javax.swing.JFrame {
         }
     }
 
-    public ImageIcon getIconFromTheme(String name) throws IOException {
+    public ImageIcon getIconFromTheme(String name, String possible) throws IOException {
         try {
             Process p = new ProcessBuilder(
                     "bash", "-c", "gsettings get org.gnome.desktop.interface icon-theme | awk -F\"'\" '{print $2}'"
@@ -437,7 +437,13 @@ public class main extends javax.swing.JFrame {
                 return new ImageIcon(main.class.getResource("pkg.png"));
             }
             String iconName = name.toLowerCase();
-            String path = "/usr/share/icons/" + theme + "/16x16/apps/" + iconName + ".png";
+            String path;
+            if(!possible.equals("N/A")){
+                path = "/usr/share/icons/" + theme + "/16x16/apps/" + possible + ".png";
+            }else{
+                path = "/usr/share/icons/" + theme + "/16x16/apps/" + iconName + ".png";
+            }
+            
             File f = new File(path);
             if (f.exists()) {
                 return new ImageIcon(path);
@@ -522,10 +528,11 @@ public class main extends javax.swing.JFrame {
                     if (line.replaceAll(".*\\(([^)]*)\\).*", "$1").isEmpty()) {
                         name = "unknown";
                     }
-                    ImageIcon icon = getIconFromTheme(name);
+                    
                     String descr = line.replaceAll(".*\\[([^]]*)\\].*", "$1");
                     String arch = line.replaceAll(".*\\{([^}]*)\\}.*", "$1");
                     String raw = line.replaceAll(".*\\?([^?]*)\\?.*", "$1");
+                    ImageIcon icon = getIconFromTheme(raw,line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
                     Boolean sel = false;
 
                     Object[] row = {icon, name, descr, arch, sel, raw};
@@ -635,10 +642,11 @@ public class main extends javax.swing.JFrame {
                     if (line.replaceAll(".*\\(([^)]*)\\).*", "$1").isEmpty()) {
                         name = "unknown";
                     }
-                    ImageIcon icon = getIconFromTheme(name);
+                    
                     String descr = line.replaceAll(".*\\[([^]]*)\\].*", "$1");
                     String arch = line.replaceAll(".*\\{([^}]*)\\}.*", "$1");
                     String raw = line.replaceAll(".*\\?([^?]*)\\?.*", "$1");
+                    ImageIcon icon = getIconFromTheme(raw,line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
                     Boolean sel = false;
 
                     Object[] row = {icon, name, descr, arch, sel, raw};
@@ -723,7 +731,7 @@ public class main extends javax.swing.JFrame {
                         + "  } "
                         + "  pkg=\"\"; desc=\"\"; arch=\"\" "
                         + "}' | head -n 700 | while IFS='|' read -r pkg desc arch; do "
-                        + "  if ! echo \"$installed\" | grep -qx \"$pkg\"; then "
+                        + "  if "+(jTabbedPane1.getSelectedIndex()==0?"!":"")+" echo \"$installed\" | grep -qx \"$pkg\"; then "
                         + "    pretty=$(grep -i \"|$pkg$\" \"$desktop_cache\" | head -n1 | cut -d'|' -f1); "
                         + "    [ -z \"$pretty\" ] && pretty=\"$pkg\"; "
                         + "    icon=$(grep -i \"|$pkg$\" \"$desktop_cache\" | head -n1 | cut -d'|' -f2); "
@@ -758,10 +766,11 @@ public class main extends javax.swing.JFrame {
                     if (line.replaceAll(".*\\(([^)]*)\\).*", "$1").isEmpty()) {
                         name = "unknown";
                     }
-                    ImageIcon icon = getIconFromTheme(name);
+                    
                     String descr = line.replaceAll(".*\\[([^]]*)\\].*", "$1");
                     String arch = line.replaceAll(".*\\{([^}]*)\\}.*", "$1");
                     String raw = line.replaceAll(".*\\?([^?]*)\\?.*", "$1");
+                    ImageIcon icon = getIconFromTheme(raw,line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
                     Boolean sel = false;
                     Object[] row = {icon, name, descr, arch, sel, raw};
                     if (cancelListing) {
@@ -913,16 +922,19 @@ public class main extends javax.swing.JFrame {
         return false;
     }
 
-    public void moveRow(DefaultTableModel from, DefaultTableModel to, int i) {
-        int colCount = from.getColumnCount();
-        Object[] rowData = new Object[colCount];
-        for (int col = 0; col < colCount; col++) {
-            rowData[col] = from.getValueAt(i, col);
+    void moveRow(DefaultTableModel from, DefaultTableModel to, int rowIndex) {
+        int columnCount = from.getColumnCount();
+        Object[] rowData = new Object[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            rowData[i] = from.getValueAt(rowIndex, i);
         }
+        from.removeRow(rowIndex);
         rowData[4] = false;
-        to.addRow(rowData);
-        from.removeRow(i);
-
+        if (rowIndex <= to.getRowCount()) {
+            to.insertRow(rowIndex, rowData);
+        } else {
+            to.addRow(rowData);
+        }
     }
 
     void apt(String arg) {
@@ -1092,6 +1104,10 @@ public class main extends javax.swing.JFrame {
                     }
                     toinstall.clear();
                     toremove.clear();
+                    SwingUtilities.invokeLater(() -> {
+                        rmopt.setEnabled(false);
+                        installopt.setEnabled(false);
+                    });
                 }
                 initModelListener();
                 lock_ops(true);
