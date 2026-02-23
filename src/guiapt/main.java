@@ -967,7 +967,7 @@ public class main extends javax.swing.JFrame {
                 saction = "Adding repository...";
                 break;
             case "reporm":
-                repo = (String) JOptionPane.showInputDialog(this, "Paste or insert repository name: ", "Add repository", JOptionPane.PLAIN_MESSAGE, null, null, "ppa:some/ppa");
+                repo = (String) JOptionPane.showInputDialog(this, "Paste or insert repository name: ", "Remove repository", JOptionPane.PLAIN_MESSAGE, null, null, "ppa:some/ppa");
                 if (repo == null || repo.isBlank()) {
                     return;
                 }
@@ -1889,6 +1889,7 @@ public class main extends javax.swing.JFrame {
             if (currentThread != null) {
                 currentThread.interrupt();
             }
+            status.setText("Total pacakges: " + onlinepackages.getModel().getRowCount()); 
         } else if (jTabbedPane1.getSelectedIndex() == 1) {
             installopt.setEnabled(false);
             rmopt.setEnabled(true);
@@ -1899,6 +1900,8 @@ public class main extends javax.swing.JFrame {
             if (currentThread != null) {
                 currentThread.interrupt();
             }
+        }else if(jTabbedPane1.getSelectedIndex()==2){
+            status.setText("");
         }
         if (localpackages.getModel().getRowCount() == 0) {
             try {
@@ -1906,7 +1909,12 @@ public class main extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }else{
+           if(jTabbedPane1.getSelectedIndex()==1){
+           status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
+           }
         }
+       
     }//GEN-LAST:event_jTabbedPane1MouseClicked
 
     private void categories2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories2MouseClicked
@@ -1994,7 +2002,8 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_rmrepoActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        JOptionPane.showMessageDialog(this, "This software open source with\nsome limits. You are not allowed\nto redistribute or modify its code\n\n© AndronikosGl 2026", "Software lisence", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Copyright © AndronikosGl 2026. All rights reserved.\n" +
+"This project is source-available.\nModification and redistribution are not permitted. \nThis project includes a modified asset based on Google \nNoto Emoji (SIL Open Font License 1.1).", "Software lisence", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
