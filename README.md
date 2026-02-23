@@ -5,7 +5,6 @@ guiapt is a lightweight GUI package manager for the APT backend written in Java.
 - One for finding available packages
 - One for managing installed packages
 - One for viewing apt log with timestamps
-- App functions:
 
 **App functions:**
 - Option for installing/removing one or multiple packages
