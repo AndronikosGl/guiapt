@@ -2,12 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package guiapt;
+package aptcenter;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.io.*;
@@ -20,6 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -39,6 +42,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.*;   // JMenu, JMenuItem, JMenuBar, JFrame, Icon, ImageIcon, etc.
+import java.awt.Graphics;      // Graphics, Component
+import java.awt.Component;
+import java.awt.image.BufferedImage;
+import java.io.File;     // if you load icons from file
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -438,12 +449,12 @@ public class main extends javax.swing.JFrame {
             }
             String iconName = name.toLowerCase();
             String path;
-            if(!possible.equals("N/A")){
+            if (!possible.equals("N/A")) {
                 path = "/usr/share/icons/" + theme + "/16x16/apps/" + possible + ".png";
-            }else{
+            } else {
                 path = "/usr/share/icons/" + theme + "/16x16/apps/" + iconName + ".png";
             }
-            
+
             File f = new File(path);
             if (f.exists()) {
                 return new ImageIcon(path);
@@ -528,11 +539,11 @@ public class main extends javax.swing.JFrame {
                     if (line.replaceAll(".*\\(([^)]*)\\).*", "$1").isEmpty()) {
                         name = "unknown";
                     }
-                    
+
                     String descr = line.replaceAll(".*\\[([^]]*)\\].*", "$1");
                     String arch = line.replaceAll(".*\\{([^}]*)\\}.*", "$1");
                     String raw = line.replaceAll(".*\\?([^?]*)\\?.*", "$1");
-                    ImageIcon icon = getIconFromTheme(raw,line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
+                    ImageIcon icon = getIconFromTheme(raw, line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
                     Boolean sel = false;
 
                     Object[] row = {icon, name, descr, arch, sel, raw};
@@ -642,11 +653,11 @@ public class main extends javax.swing.JFrame {
                     if (line.replaceAll(".*\\(([^)]*)\\).*", "$1").isEmpty()) {
                         name = "unknown";
                     }
-                    
+
                     String descr = line.replaceAll(".*\\[([^]]*)\\].*", "$1");
                     String arch = line.replaceAll(".*\\{([^}]*)\\}.*", "$1");
                     String raw = line.replaceAll(".*\\?([^?]*)\\?.*", "$1");
-                    ImageIcon icon = getIconFromTheme(raw,line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
+                    ImageIcon icon = getIconFromTheme(raw, line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
                     Boolean sel = false;
 
                     Object[] row = {icon, name, descr, arch, sel, raw};
@@ -731,7 +742,7 @@ public class main extends javax.swing.JFrame {
                         + "  } "
                         + "  pkg=\"\"; desc=\"\"; arch=\"\" "
                         + "}' | head -n 700 | while IFS='|' read -r pkg desc arch; do "
-                        + "  if "+(jTabbedPane1.getSelectedIndex()==0?"!":"")+" echo \"$installed\" | grep -qx \"$pkg\"; then "
+                        + "  if " + (jTabbedPane1.getSelectedIndex() == 0 ? "!" : "") + " echo \"$installed\" | grep -qx \"$pkg\"; then "
                         + "    pretty=$(grep -i \"|$pkg$\" \"$desktop_cache\" | head -n1 | cut -d'|' -f1); "
                         + "    [ -z \"$pretty\" ] && pretty=\"$pkg\"; "
                         + "    icon=$(grep -i \"|$pkg$\" \"$desktop_cache\" | head -n1 | cut -d'|' -f2); "
@@ -766,11 +777,11 @@ public class main extends javax.swing.JFrame {
                     if (line.replaceAll(".*\\(([^)]*)\\).*", "$1").isEmpty()) {
                         name = "unknown";
                     }
-                    
+
                     String descr = line.replaceAll(".*\\[([^]]*)\\].*", "$1");
                     String arch = line.replaceAll(".*\\{([^}]*)\\}.*", "$1");
                     String raw = line.replaceAll(".*\\?([^?]*)\\?.*", "$1");
-                    ImageIcon icon = getIconFromTheme(raw,line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
+                    ImageIcon icon = getIconFromTheme(raw, line.replaceAll(".*\\<([^}]*)\\>.*", "$1"));
                     Boolean sel = false;
                     Object[] row = {icon, name, descr, arch, sel, raw};
                     if (cancelListing) {
@@ -1125,20 +1136,87 @@ public class main extends javax.swing.JFrame {
         }).start();
 
     }
+private static void applyHoverInvert(JMenu menu) {
+    for (Component comp : menu.getMenuComponents()) {
+        if (comp instanceof JMenuItem) {
+            JMenuItem item = (JMenuItem) comp;
 
-    public main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+            Icon icon = item.getIcon();
+            if (icon instanceof ImageIcon) {
+                ImageIcon imageIcon = (ImageIcon) icon;
+
+                BufferedImage original = new BufferedImage(
+                    imageIcon.getIconWidth(),
+                    imageIcon.getIconHeight(),
+                    BufferedImage.TYPE_INT_ARGB
+                );
+                Graphics g = original.getGraphics();
+                imageIcon.paintIcon(null, g, 0, 0);
+                g.dispose();
+
+                BufferedImage inverted = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < original.getHeight(); y++) {
+                    for (int x = 0; x < original.getWidth(); x++) {
+                        int rgba = original.getRGB(x, y);
+                        Color col = new Color(rgba, true);
+                        col = new Color(255 - col.getRed(), 255 - col.getGreen(), 255 - col.getBlue(), col.getAlpha());
+                        inverted.setRGB(x, y, col.getRGB());
+                    }
+                }
+
+                item.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseEntered(java.awt.event.MouseEvent e) {
+                        if(item.isEnabled()==true){
+                        item.setIcon(new ImageIcon(inverted));
+                        }
+                    }
+                    @Override
+                    public void mouseExited(java.awt.event.MouseEvent e) {
+                        item.setIcon(imageIcon);
+                    }
+                });
+            }
+        } else if (comp instanceof JMenu) {
+            applyHoverInvert((JMenu) comp); // recursively handle submenus
+        }
+    }
+}
+    public main(String[] args) throws Exception, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, java.lang.Exception{
+        int mode;
+       
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         if (args.length > 0 && "-legacyui".equals(args[0])) {
             make_motif_light();
             disable_cde_border();
+            mode = 1;
+        } else if(args.length > 0 && "-forcegtk".equals(args[0])){
+             UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+             fixgtkfont();
+             mode = 2;
         } else {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            mode = 3;
+            FlatLightLaf.setGlobalExtraDefaults(Collections.singletonMap("@accentColor", "#2285E1"));
+            UIManager.put("TabbedPane.contentAreaColor", new Color(245, 245, 245));
+            UIManager.put("TabbedPane.underlineColor", new Color(0x2285E1));
+            UIManager.put("TabbedPane.inactiveUnderlineColor", new Color(0x2285E1));
+            UIManager.put("MenuBar.border", BorderFactory.createEmptyBorder());
+            UIManager.put("MenuBar.borderColor", new Color(0, 0, 0, 0));
+            UIManager.put("ScrollBar.width", 11);
+            UIManager.put("CheckBox.icon.selectedBackground", new Color(0x4E9DE7));
+            UIManager.put("CheckBox.icon.checkmarkColor", Color.WHITE);
+            UIManager.put("List.selectionInactiveBackground", new Color(38,116,190));
+            UIManager.put("List.selectionInactiveForeground", Color.WHITE);
+            UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
+           
+            FlatLightLaf.setup();
             fixgtkfont();
         }
         isOSCompatible();
         this.setIconImage(new ImageIcon(main.class.getResource("icon.png")).getImage());
 
         initComponents();
+        this.setLocationRelativeTo(null);
         SwingUtilities.invokeLater(() -> {
             categories.setSelectedIndex(1);
         });
@@ -1156,7 +1234,12 @@ public class main extends javax.swing.JFrame {
         }
 
         categories.setModel(m);
-
+        Color hover = UIManager.getColor("MenuItem.selectionForeground");
+        if(mode ==3 || (hover != null && hover.getRed() > 240 && hover.getGreen() > 240 && hover.getBlue() > 240)){
+        applyHoverInvert(filem);
+        applyHoverInvert(editm);
+        applyHoverInvert(helpm);
+        }
         // onlinepackages.removeColumn(onlinepackages.getColumnModel().getColumn(5));
     }
 
@@ -1322,13 +1405,13 @@ public class main extends javax.swing.JFrame {
         about.setModal(true);
         about.setResizable(false);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/iconsmall.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/iconsmall.png"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        jLabel2.setText("guiapt v1.0");
+        jLabel2.setText("Apt Center v1.0");
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("<html>Gui apt is a lightweight and portable <br>gui package manager for the apt  <br>backend made in Java™</html>");
+        jLabel3.setText("<html>Apt Center is a lightweight and <br> portable gui package manager for the pkg backend made in Java™</html>");
         jLabel3.setToolTipText("");
         jLabel3.setFocusable(false);
         jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -1343,16 +1426,14 @@ public class main extends javax.swing.JFrame {
                 .addGap(17, 17, 17)
                 .addGroup(aboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jvm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(21, Short.MAX_VALUE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(14, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, aboutLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(aboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(aboutLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel2))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(aboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(74, 74, 74))
+                .addGap(79, 79, 79))
         );
         aboutLayout.setVerticalGroup(
             aboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1361,14 +1442,15 @@ public class main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jvm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Package Manager");
+        setTitle("Apt Center");
+        setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(680, 413));
         setSize(new java.awt.Dimension(680, 413));
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -1393,7 +1475,9 @@ public class main extends javax.swing.JFrame {
         jToolBar1.add(jProgressBar1);
         jToolBar1.add(filler2);
 
+        jTabbedPane1.setBackground(new java.awt.Color(245, 245, 245));
         jTabbedPane1.setFocusable(false);
+        jTabbedPane1.setOpaque(true);
         jTabbedPane1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTabbedPane1MouseClicked(evt);
@@ -1401,6 +1485,8 @@ public class main extends javax.swing.JFrame {
         });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 194, 194)));
 
         categories.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "<html><b>Categories:</b></html>", "All", "Tools", "Internet", "Games", "Graphics", "Office", "Binaries", "Desktops", "Libraries" };
@@ -1421,6 +1507,7 @@ public class main extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(categories);
 
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 194, 194)));
         jScrollPane2.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 jScrollPane2ComponentResized(evt);
@@ -1480,6 +1567,7 @@ public class main extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
+        jScrollPane5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 194, 194)));
         jScrollPane5.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane5.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -1518,6 +1606,8 @@ public class main extends javax.swing.JFrame {
             localpackages.getColumnModel().getColumn(4).setPreferredWidth(5);
         }
 
+        jScrollPane6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 194, 194)));
+
         categories2.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "<html><b>Categories:</b></html>", "All", "Tools", "Internet", "Games", "Graphics", "Office", "Binaries", "Desktops", "Libraries" };
             public int getSize() { return strings.length; }
@@ -1546,8 +1636,8 @@ public class main extends javax.swing.JFrame {
                 .addGap(0, 558, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                    .addGap(0, 122, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 558, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGap(122, 122, 122)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1568,6 +1658,9 @@ public class main extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("System Log", jScrollPane3);
 
+        jMenuBar1.setBackground(new java.awt.Color(245, 245, 245));
+        jMenuBar1.setOpaque(true);
+
         filem.setText(" File ");
         filem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1576,7 +1669,7 @@ public class main extends javax.swing.JFrame {
         });
 
         installopt.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        installopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/check.png"))); // NOI18N
+        installopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/check.png"))); // NOI18N
         installopt.setText("Install selected");
         installopt.setEnabled(false);
         installopt.addActionListener(new java.awt.event.ActionListener() {
@@ -1587,7 +1680,7 @@ public class main extends javax.swing.JFrame {
         filem.add(installopt);
 
         rmopt.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        rmopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/x.png"))); // NOI18N
+        rmopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/x.png"))); // NOI18N
         rmopt.setText("Remove selected");
         rmopt.setEnabled(false);
         rmopt.addActionListener(new java.awt.event.ActionListener() {
@@ -1598,7 +1691,7 @@ public class main extends javax.swing.JFrame {
         filem.add(rmopt);
 
         refreshopt.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        refreshopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/refresh.png"))); // NOI18N
+        refreshopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/refresh.png"))); // NOI18N
         refreshopt.setText("Refresh list");
         refreshopt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1608,7 +1701,7 @@ public class main extends javax.swing.JFrame {
         filem.add(refreshopt);
 
         updateopt.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        updateopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/update.png"))); // NOI18N
+        updateopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/update.png"))); // NOI18N
         updateopt.setText("Update system");
         updateopt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1618,7 +1711,7 @@ public class main extends javax.swing.JFrame {
         filem.add(updateopt);
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/upgrade.png"))); // NOI18N
+        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/upgrade.png"))); // NOI18N
         jMenuItem1.setText("Upgrade system");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1628,8 +1721,8 @@ public class main extends javax.swing.JFrame {
         filem.add(jMenuItem1);
 
         exitopt.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        exitopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/exit.png"))); // NOI18N
-        exitopt.setText("Exit guiapt");
+        exitopt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/exit.png"))); // NOI18N
+        exitopt.setText("Exit Apt Center");
         exitopt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitoptActionPerformed(evt);
@@ -1641,7 +1734,7 @@ public class main extends javax.swing.JFrame {
 
         editm.setText(" Edit ");
 
-        jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/filter.png"))); // NOI18N
+        jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/filter.png"))); // NOI18N
         jMenu2.setText("Search filter");
 
         byname.setSelected(true);
@@ -1654,7 +1747,7 @@ public class main extends javax.swing.JFrame {
         editm.add(jMenu2);
 
         search.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/search.png"))); // NOI18N
+        search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/search.png"))); // NOI18N
         search.setText("Search...");
         search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1663,7 +1756,7 @@ public class main extends javax.swing.JFrame {
         });
         editm.add(search);
 
-        addrepo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/repo.png"))); // NOI18N
+        addrepo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/repo.png"))); // NOI18N
         addrepo.setText("Add Repository");
         addrepo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1672,7 +1765,7 @@ public class main extends javax.swing.JFrame {
         });
         editm.add(addrepo);
 
-        rmrepo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/reporm.png"))); // NOI18N
+        rmrepo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/reporm.png"))); // NOI18N
         rmrepo.setText("Remove Repository");
         rmrepo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1685,7 +1778,7 @@ public class main extends javax.swing.JFrame {
 
         helpm.setText(" Help ");
 
-        jMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/about.png"))); // NOI18N
+        jMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/about.png"))); // NOI18N
         jMenuItem4.setText("About");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1694,7 +1787,7 @@ public class main extends javax.swing.JFrame {
         });
         helpm.add(jMenuItem4);
 
-        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guiapt/law.png"))); // NOI18N
+        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aptcenter/law.png"))); // NOI18N
         jMenuItem2.setText("Licensing");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1889,7 +1982,7 @@ public class main extends javax.swing.JFrame {
             if (currentThread != null) {
                 currentThread.interrupt();
             }
-            status.setText("Total pacakges: " + onlinepackages.getModel().getRowCount()); 
+            status.setText("Total pacakges: " + onlinepackages.getModel().getRowCount());
         } else if (jTabbedPane1.getSelectedIndex() == 1) {
             installopt.setEnabled(false);
             rmopt.setEnabled(true);
@@ -1900,7 +1993,7 @@ public class main extends javax.swing.JFrame {
             if (currentThread != null) {
                 currentThread.interrupt();
             }
-        }else if(jTabbedPane1.getSelectedIndex()==2){
+        } else if (jTabbedPane1.getSelectedIndex() == 2) {
             status.setText("");
         }
         if (localpackages.getModel().getRowCount() == 0) {
@@ -1909,12 +2002,12 @@ public class main extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
-           if(jTabbedPane1.getSelectedIndex()==1){
-           status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
-           }
+        } else {
+            if (jTabbedPane1.getSelectedIndex() == 1) {
+                status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
+            }
         }
-       
+
     }//GEN-LAST:event_jTabbedPane1MouseClicked
 
     private void categories2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_categories2MouseClicked
@@ -2002,8 +2095,8 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_rmrepoActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        JOptionPane.showMessageDialog(this, "Copyright © AndronikosGl 2026. All rights reserved.\n" +
-"This project is source-available.\nModification and redistribution are not permitted. \nThis project includes a modified asset based on Google \nNoto Emoji (SIL Open Font License 1.1).", "Software lisence", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Copyright © AndronikosGl 2026. All rights reserved.\n"
+                + "This project is source-available.\nModification and redistribution are not permitted. \nThis project includes a modified asset based on Google \nNoto Emoji (SIL Open Font License 1.1).", "Software lisence", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
@@ -2047,6 +2140,8 @@ public class main extends javax.swing.JFrame {
                 } catch (IllegalAccessException ex) {
                     Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

@@ -170,20 +170,17 @@
                   <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jvm" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel3" min="-2" pref="237" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="21" max="32767" attributes="0"/>
+                  <EmptySpace pref="14" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
-                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" pref="99" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="79" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -194,10 +191,10 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" pref="49" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jvm" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="14" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -206,7 +203,7 @@
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/guiapt/iconsmall.png"/>
+              <Image iconType="3" name="/aptcenter/iconsmall.png"/>
             </Property>
           </Properties>
         </Component>
@@ -215,13 +212,13 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Inter" size="14" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="guiapt v1.0"/>
+            <Property name="text" type="java.lang.String" value="Apt Center v1.0"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel3">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;Gui apt is a lightweight and portable &lt;br&gt;gui package manager for the apt  &lt;br&gt;backend made in Java&#x2122;&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Apt Center is a lightweight and &lt;br&gt; portable gui package manager for the pkg backend made in Java&#x2122;&lt;/html&gt;"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -235,6 +232,12 @@
       </SubComponents>
     </Container>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="f5" green="f5" red="f5" type="rgb"/>
+        </Property>
+        <Property name="opaque" type="boolean" value="true"/>
+      </Properties>
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="filem">
           <Properties>
@@ -250,7 +253,7 @@
                   <KeyStroke key="Ctrl+I"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/check.png"/>
+                  <Image iconType="3" name="/aptcenter/check.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Install selected"/>
                 <Property name="enabled" type="boolean" value="false"/>
@@ -265,7 +268,7 @@
                   <KeyStroke key="Ctrl+D"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/x.png"/>
+                  <Image iconType="3" name="/aptcenter/x.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Remove selected"/>
                 <Property name="enabled" type="boolean" value="false"/>
@@ -280,7 +283,7 @@
                   <KeyStroke key="Ctrl+R"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/refresh.png"/>
+                  <Image iconType="3" name="/aptcenter/refresh.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Refresh list"/>
               </Properties>
@@ -294,7 +297,7 @@
                   <KeyStroke key="Ctrl+Alt+U"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/update.png"/>
+                  <Image iconType="3" name="/aptcenter/update.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Update system"/>
               </Properties>
@@ -308,7 +311,7 @@
                   <KeyStroke key="Ctrl+Alt+G"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/upgrade.png"/>
+                  <Image iconType="3" name="/aptcenter/upgrade.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Upgrade system"/>
               </Properties>
@@ -322,9 +325,9 @@
                   <KeyStroke key="Alt+F4"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/exit.png"/>
+                  <Image iconType="3" name="/aptcenter/exit.png"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Exit guiapt"/>
+                <Property name="text" type="java.lang.String" value="Exit Apt Center"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitoptActionPerformed"/>
@@ -340,7 +343,7 @@
             <Menu class="javax.swing.JMenu" name="jMenu2">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/filter.png"/>
+                  <Image iconType="3" name="/aptcenter/filter.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Search filter"/>
               </Properties>
@@ -364,7 +367,7 @@
                   <KeyStroke key="Ctrl+S"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/search.png"/>
+                  <Image iconType="3" name="/aptcenter/search.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Search..."/>
               </Properties>
@@ -375,7 +378,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="addrepo">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/repo.png"/>
+                  <Image iconType="3" name="/aptcenter/repo.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Add Repository"/>
               </Properties>
@@ -386,7 +389,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="rmrepo">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/reporm.png"/>
+                  <Image iconType="3" name="/aptcenter/reporm.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Remove Repository"/>
               </Properties>
@@ -404,7 +407,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/about.png"/>
+                  <Image iconType="3" name="/aptcenter/about.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="About"/>
               </Properties>
@@ -415,7 +418,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/guiapt/law.png"/>
+                  <Image iconType="3" name="/aptcenter/law.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Licensing"/>
               </Properties>
@@ -430,7 +433,8 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="0"/>
-    <Property name="title" type="java.lang.String" value="Package Manager"/>
+    <Property name="title" type="java.lang.String" value="Apt Center"/>
+    <Property name="locationByPlatform" type="boolean" value="true"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[680, 413]"/>
     </Property>
@@ -538,7 +542,11 @@
     </Container>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="f5" green="f5" red="f5" type="rgb"/>
+        </Property>
         <Property name="focusable" type="boolean" value="false"/>
+        <Property name="opaque" type="boolean" value="true"/>
       </Properties>
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTabbedPane1MouseClicked"/>
@@ -584,6 +592,15 @@
           </Layout>
           <SubComponents>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                    <LineBorder>
+                      <Color PropertyName="color" blue="c2" green="c2" red="c2" type="rgb"/>
+                    </LineBorder>
+                  </Border>
+                </Property>
+              </Properties>
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
               </AuxValues>
@@ -620,6 +637,15 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                    <LineBorder>
+                      <Color PropertyName="color" blue="c2" green="c2" red="c2" type="rgb"/>
+                    </LineBorder>
+                  </Border>
+                </Property>
+              </Properties>
               <Events>
                 <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="jScrollPane2ComponentResized"/>
               </Events>
@@ -708,8 +734,8 @@
                   </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace min="0" pref="122" max="32767" attributes="0"/>
-                          <Component id="jScrollPane5" min="-2" pref="558" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
+                          <Component id="jScrollPane5" pref="558" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -726,6 +752,13 @@
           <SubComponents>
             <Container class="javax.swing.JScrollPane" name="jScrollPane5">
               <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                    <LineBorder>
+                      <Color PropertyName="color" blue="c2" green="c2" red="c2" type="rgb"/>
+                    </LineBorder>
+                  </Border>
+                </Property>
                 <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
               </Properties>
               <Events>
@@ -790,6 +823,15 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane6">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                    <LineBorder>
+                      <Color PropertyName="color" blue="c2" green="c2" red="c2" type="rgb"/>
+                    </LineBorder>
+                  </Border>
+                </Property>
+              </Properties>
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
               </AuxValues>
