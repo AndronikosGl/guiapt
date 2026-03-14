@@ -47,6 +47,7 @@ import javax.swing.JMenuItem;
 import javax.swing.*;   // JMenu, JMenuItem, JMenuBar, JFrame, Icon, ImageIcon, etc.
 import java.awt.Graphics;      // Graphics, Component
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.image.BufferedImage;
 import java.io.File;     // if you load icons from file
 import javax.imageio.ImageIO;
@@ -345,6 +346,7 @@ public class main extends javax.swing.JFrame {
         helpm.setEnabled(state);
         categories.setEnabled(state);
         categories2.setEnabled(state);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
     }
 
     void totalsize() throws IOException {
@@ -465,6 +467,8 @@ public class main extends javax.swing.JFrame {
     }
 
     void dpkg_list(String category) throws IOException {
+        
+        status.requestFocus();
         cancelListing = false;
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
@@ -567,6 +571,7 @@ public class main extends javax.swing.JFrame {
                     jProgressBar1.setVisible(false);
                     jProgressBar1.revalidate();
                     jProgressBar1.repaint();
+                    
                     status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
                 });
                 listingTimer.setRepeats(false);
@@ -580,6 +585,8 @@ public class main extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> {
                     log += "<font color='#006400'>Done listing packages...</font><br>";
                     logtext.setText("<html>" + log + "</html>");
+                    
+                    categories2.requestFocus();
                 });
             }
         });
@@ -693,6 +700,7 @@ public class main extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> {
                     log += "<font color='#006400'>Done listing packages...</font><br>";
                     logtext.setText("<html>" + log + "</html>");
+                    categories.requestFocus();
                 });
             }
         });
@@ -1136,71 +1144,74 @@ public class main extends javax.swing.JFrame {
         }).start();
 
     }
-private static void applyHoverInvert(JMenu menu) {
-    for (Component comp : menu.getMenuComponents()) {
-        if (comp instanceof JMenuItem) {
-            JMenuItem item = (JMenuItem) comp;
 
-            Icon icon = item.getIcon();
-            if (icon instanceof ImageIcon) {
-                ImageIcon imageIcon = (ImageIcon) icon;
+    private static void applyHoverInvert(JMenu menu) {
+        for (Component comp : menu.getMenuComponents()) {
+            if (comp instanceof JMenuItem) {
+                JMenuItem item = (JMenuItem) comp;
 
-                BufferedImage original = new BufferedImage(
-                    imageIcon.getIconWidth(),
-                    imageIcon.getIconHeight(),
-                    BufferedImage.TYPE_INT_ARGB
-                );
-                Graphics g = original.getGraphics();
-                imageIcon.paintIcon(null, g, 0, 0);
-                g.dispose();
+                Icon icon = item.getIcon();
+                if (icon instanceof ImageIcon) {
+                    ImageIcon imageIcon = (ImageIcon) icon;
 
-                BufferedImage inverted = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                for (int y = 0; y < original.getHeight(); y++) {
-                    for (int x = 0; x < original.getWidth(); x++) {
-                        int rgba = original.getRGB(x, y);
-                        Color col = new Color(rgba, true);
-                        col = new Color(255 - col.getRed(), 255 - col.getGreen(), 255 - col.getBlue(), col.getAlpha());
-                        inverted.setRGB(x, y, col.getRGB());
-                    }
-                }
+                    BufferedImage original = new BufferedImage(
+                            imageIcon.getIconWidth(),
+                            imageIcon.getIconHeight(),
+                            BufferedImage.TYPE_INT_ARGB
+                    );
+                    Graphics g = original.getGraphics();
+                    imageIcon.paintIcon(null, g, 0, 0);
+                    g.dispose();
 
-                item.addMouseListener(new java.awt.event.MouseAdapter() {
-                    @Override
-                    public void mouseEntered(java.awt.event.MouseEvent e) {
-                        if(item.isEnabled()==true){
-                        item.setIcon(new ImageIcon(inverted));
+                    BufferedImage inverted = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    for (int y = 0; y < original.getHeight(); y++) {
+                        for (int x = 0; x < original.getWidth(); x++) {
+                            int rgba = original.getRGB(x, y);
+                            Color col = new Color(rgba, true);
+                            col = new Color(255 - col.getRed(), 255 - col.getGreen(), 255 - col.getBlue(), col.getAlpha());
+                            inverted.setRGB(x, y, col.getRGB());
                         }
                     }
-                    @Override
-                    public void mouseExited(java.awt.event.MouseEvent e) {
-                        item.setIcon(imageIcon);
-                    }
-                });
+
+                    item.addMouseListener(new java.awt.event.MouseAdapter() {
+                        @Override
+                        public void mouseEntered(java.awt.event.MouseEvent e) {
+                            if (item.isEnabled() == true) {
+                                item.setIcon(new ImageIcon(inverted));
+                            }
+                        }
+
+                        @Override
+                        public void mouseExited(java.awt.event.MouseEvent e) {
+                            item.setIcon(imageIcon);
+                        }
+                    });
+                }
+            } else if (comp instanceof JMenu) {
+                applyHoverInvert((JMenu) comp); // recursively handle submenus
             }
-        } else if (comp instanceof JMenu) {
-            applyHoverInvert((JMenu) comp); // recursively handle submenus
         }
     }
-}
-    public main(String[] args) throws Exception, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, java.lang.Exception{
+
+    public main(String[] args) throws Exception, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, java.lang.Exception {
         int mode;
-       
+
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         if (args.length > 0 && "-legacyui".equals(args[0])) {
             make_motif_light();
             disable_cde_border();
             mode = 1;
-        } else if(args.length > 0 && "-forcegtk".equals(args[0])){
-             UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-             fixgtkfont();
-             mode = 2;
+        } else if (args.length > 0 && "-forcegtk".equals(args[0])) {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            fixgtkfont();
+            mode = 2;
         } else {
             mode = 3;
             FlatLightLaf.setGlobalExtraDefaults(Collections.singletonMap("@accentColor", "#2285E1"));
             UIManager.put("TabbedPane.contentAreaColor", new Color(245, 245, 245));
             UIManager.put("TabbedPane.underlineColor", new Color(0x2285E1));
             UIManager.put("TabbedPane.inactiveUnderlineColor", new Color(0x2285E1));
-            UIManager.put("Table.selectionBackground",new Color(0xD3D3D3));
+            UIManager.put("Table.selectionBackground", new Color(0xD3D3D3));
             UIManager.put("Table.selectionForeground", Color.BLACK);
             UIManager.put("Table.cellFocusColor", new Color(0xD3D3D3));
             UIManager.put("MenuBar.border", BorderFactory.createEmptyBorder());
@@ -1208,10 +1219,10 @@ private static void applyHoverInvert(JMenu menu) {
             UIManager.put("ScrollBar.width", 11);
             UIManager.put("CheckBox.icon.selectedBackground", new Color(0x4E9DE7));
             UIManager.put("CheckBox.icon.checkmarkColor", Color.WHITE);
-            UIManager.put("List.selectionInactiveBackground", new Color(38,116,190));
-            UIManager.put("List.selectionInactiveForeground", Color.WHITE);
             UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-           
+            UIManager.put("List.selectionInactiveBackground", new Color(211, 211, 211));
+            UIManager.put("List.selectionInactiveForeground", Color.BLACK);
+
             FlatLightLaf.setup();
             fixgtkfont();
         }
@@ -1238,10 +1249,10 @@ private static void applyHoverInvert(JMenu menu) {
 
         categories.setModel(m);
         Color hover = UIManager.getColor("MenuItem.selectionForeground");
-        if(mode ==3 || (hover != null && hover.getRed() > 240 && hover.getGreen() > 240 && hover.getBlue() > 240)){
-        applyHoverInvert(filem);
-        applyHoverInvert(editm);
-        applyHoverInvert(helpm);
+        if (mode == 3 || (hover != null && hover.getRed() > 240 && hover.getGreen() > 240 && hover.getBlue() > 240)) {
+            applyHoverInvert(filem);
+            applyHoverInvert(editm);
+            applyHoverInvert(helpm);
         }
         // onlinepackages.removeColumn(onlinepackages.getColumnModel().getColumn(5));
     }
@@ -1617,6 +1628,8 @@ private static void applyHoverInvert(JMenu menu) {
             public String getElementAt(int i) { return strings[i]; }
         });
         categories2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        categories2.setInheritsPopupMenu(true);
+        categories2.setRequestFocusEnabled(false);
         categories2.setSelectedIndex(1);
         categories2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1996,20 +2009,21 @@ private static void applyHoverInvert(JMenu menu) {
             if (currentThread != null) {
                 currentThread.interrupt();
             }
+            if (localpackages.getModel().getRowCount() == 0) {
+                try {
+                    dpkg_list(categories2.getSelectedValue());
+                } catch (IOException ex) {
+                    Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                if (jTabbedPane1.getSelectedIndex() == 1) {
+                    status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
+                }
+            }
         } else if (jTabbedPane1.getSelectedIndex() == 2) {
             status.setText("");
         }
-        if (localpackages.getModel().getRowCount() == 0) {
-            try {
-                dpkg_list(categories2.getSelectedValue());
-            } catch (IOException ex) {
-                Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            if (jTabbedPane1.getSelectedIndex() == 1) {
-                status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
-            }
-        }
+
 
     }//GEN-LAST:event_jTabbedPane1MouseClicked
 
@@ -2099,7 +2113,7 @@ private static void applyHoverInvert(JMenu menu) {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         JOptionPane.showMessageDialog(this, "Copyright © AndronikosGl 2026. All rights reserved.\n"
-                + "This project is source-available.\nModification and redistribution are not permitted. \nThis project includes a modified asset based on Google \nNoto Emoji (SIL Open Font License 1.1).", "Software lisence", JOptionPane.INFORMATION_MESSAGE);
+                + "This project is source-available.\nModification and redistribution are not permitted. \nThis project includes a modified asset based on Google \nNoto Emoji (SIL Open Font License 1.1).\nThis project uses the FlatLaf look and feel library.\nhttps://www.formdev.com/flatlaf/", "Software lisence", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**

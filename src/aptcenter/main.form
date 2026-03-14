@@ -855,6 +855,8 @@
                       </StringArray>
                     </Property>
                     <Property name="selectionMode" type="int" value="0"/>
+                    <Property name="inheritsPopupMenu" type="boolean" value="true"/>
+                    <Property name="requestFocusEnabled" type="boolean" value="false"/>
                     <Property name="selectedIndex" type="int" value="1"/>
                   </Properties>
                   <Events>
