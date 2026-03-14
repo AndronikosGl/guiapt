@@ -6,7 +6,6 @@ package aptcenter;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Insets;
@@ -50,7 +49,6 @@ import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.image.BufferedImage;
 import java.io.File;     // if you load icons from file
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -80,6 +78,49 @@ public class main extends javax.swing.JFrame {
     /**
      * Creates new form main
      */
+    private static final String[] LOCKS = {
+        "/var/lib/dpkg/lock-frontend",
+        "/var/lib/dpkg/lock",
+        "/var/lib/apt/lists/lock",
+        "/var/cache/apt/archives/lock"
+    };
+
+    public boolean isDpkgRunning() {
+        for (String lock : LOCKS) {
+            try {
+
+                ProcessBuilder pb = new ProcessBuilder("fuser", lock);
+                Process p = pb.start();
+
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(p.getInputStream())
+                );
+
+                String output = reader.readLine();
+                p.waitFor();
+
+                if (output != null && !output.trim().isEmpty()) {
+
+                    String pid = output.replace(lock + ":", "").trim();
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Another process is holding dpkg lock\nPID: " + pid + "\nLock: " + lock,
+                            "Unsafe Operation Aborted",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                    return true;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
     public void make_motif_light() {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
@@ -252,7 +293,7 @@ public class main extends javax.swing.JFrame {
                 currentThread.interrupt();
             }
             status.setText("dpkg --configure -a needs your permition...");
-            Process fix = new ProcessBuilder("bash", "-c", "pkexec dpkg --configure -a").start();
+            Process fix = new ProcessBuilder("bash", "-c", "dpkg --configure -a").start();
 
             fix.waitFor();
             System.exit(0);
@@ -467,7 +508,7 @@ public class main extends javax.swing.JFrame {
     }
 
     void dpkg_list(String category) throws IOException {
-        
+
         status.requestFocus();
         cancelListing = false;
 
@@ -571,7 +612,7 @@ public class main extends javax.swing.JFrame {
                     jProgressBar1.setVisible(false);
                     jProgressBar1.revalidate();
                     jProgressBar1.repaint();
-                    
+
                     status.setText("Total pacakges: " + localpackages.getModel().getRowCount());
                 });
                 listingTimer.setRepeats(false);
@@ -585,7 +626,7 @@ public class main extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> {
                     log += "<font color='#006400'>Done listing packages...</font><br>";
                     logtext.setText("<html>" + log + "</html>");
-                    
+
                     categories2.requestFocus();
                 });
             }
@@ -1036,15 +1077,15 @@ public class main extends javax.swing.JFrame {
             try {
                 if (arg.equals("repoadd")) {
                     bashCommand
-                            = "pkexec env DEBIAN_FRONTEND=noninteractive "
+                            = "env DEBIAN_FRONTEND=noninteractive "
                             + "add-apt-repository -y " + rp;
                 } else if (arg.equals("reporm")) {
                     bashCommand
-                            = "pkexec env DEBIAN_FRONTEND=noninteractive "
+                            = "env DEBIAN_FRONTEND=noninteractive "
                             + "add-apt-repository -r -y " + rp;
                 } else {
                     bashCommand
-                            = "pkexec env DEBIAN_FRONTEND=noninteractive "
+                            = "env DEBIAN_FRONTEND=noninteractive "
                             + "apt-get " + arg + " -y -o APT::Status-Fd=1 "
                             + (arg.equals("remove") ? getCheckedLocal() : getChecked());
                 }
@@ -1131,10 +1172,17 @@ public class main extends javax.swing.JFrame {
                 initModelListener();
                 lock_ops(true);
                 SwingUtilities.invokeLater(() -> {
+                    if (logtext.getText().contains("E:")) {
+                        log += "<font color='red'>Oparation failed...</font><br>";
+                        logtext.setText("<html>" + log + "</html>");
+                        logtext.revalidate();
+                        logtext.repaint();
+                    }else{
                     log += "<font color='#006400'>Oparation finished...</font><br>";
                     logtext.setText("<html>" + log + "</html>");
                     logtext.revalidate();
                     logtext.repaint();
+                    }
                     SwingUtilities.invokeLater(() -> {
                         scrolllog();
                     });
@@ -1195,7 +1243,9 @@ public class main extends javax.swing.JFrame {
 
     public main(String[] args) throws Exception, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, java.lang.Exception {
         int mode;
-
+        // if (isDpkgRunning()) {
+        //System.exit(0);
+        // }
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         if (args.length > 0 && "-legacyui".equals(args[0])) {
             make_motif_light();
@@ -1840,7 +1890,9 @@ public class main extends javax.swing.JFrame {
 
     private void exitoptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitoptActionPerformed
         try {
-            exit();
+            if (isDpkgRunning() == false) {
+                exit();
+            }
         } catch (IOException ex) {
             Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
@@ -1905,26 +1957,27 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_categoriesMouseClicked
 
     private void installoptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installoptActionPerformed
-        deplist.setListData(new String[]{"None"});
-        totalsize.setText("");
-        Confirm.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        Confirm.pack();
-        Confirm.setLocationRelativeTo(this);
-        confirmtitle.setText("This packages are pending to be installed:");
-        checked.setText(getChecked().replace(" ", ", "));
-        if (checked.getText().length() > 70) {
-            checked.setText(checked.getText().substring(0, 71).replaceAll(",\\s*$", "") + "...");
+        if (isDpkgRunning() == false) {
+            deplist.setListData(new String[]{"None"});
+            totalsize.setText("");
+            Confirm.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+            Confirm.pack();
+            Confirm.setLocationRelativeTo(this);
+            confirmtitle.setText("This packages are pending to be installed:");
+            checked.setText(getChecked().replace(" ", ", "));
+            if (checked.getText().length() > 70) {
+                checked.setText(checked.getText().substring(0, 71).replaceAll(",\\s*$", "") + "...");
+            }
+            action = 1;
+            try {
+                totalsize();
+                dependends("install");
+            } catch (IOException ex) {
+                Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                Confirm.setVisible(true);
+            }
         }
-        action = 1;
-        try {
-            totalsize();
-            dependends("install");
-        } catch (IOException ex) {
-            Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            Confirm.setVisible(true);
-        }
-
     }//GEN-LAST:event_installoptActionPerformed
 
     private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
@@ -1956,26 +2009,27 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelActionPerformed
 
     private void rmoptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rmoptActionPerformed
-
-        Toolkit.getDefaultToolkit().beep();
-        deplist.setListData(new String[]{"None"});
-        totalsize.setText("");
-        Confirm.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        Confirm.pack();
-        Confirm.setLocationRelativeTo(this);
-        confirmtitle.setText("This packages are pending to be remove:");
-        checked.setText(getCheckedLocal().replace(" ", ", "));
-        if (checked.getText().length() > 70) {
-            checked.setText(checked.getText().substring(0, 71).replaceAll(",\\s*$", "") + "...");
-        }
-        action = 2;
-        try {
-            totalsize();
-            dependends("remove");
-        } catch (IOException ex) {
-            Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            Confirm.setVisible(true);
+        if (isDpkgRunning() == false) {
+            Toolkit.getDefaultToolkit().beep();
+            deplist.setListData(new String[]{"None"});
+            totalsize.setText("");
+            Confirm.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+            Confirm.pack();
+            Confirm.setLocationRelativeTo(this);
+            confirmtitle.setText("This packages are pending to be remove:");
+            checked.setText(getCheckedLocal().replace(" ", ", "));
+            if (checked.getText().length() > 70) {
+                checked.setText(checked.getText().substring(0, 71).replaceAll(",\\s*$", "") + "...");
+            }
+            action = 2;
+            try {
+                totalsize();
+                dependends("remove");
+            } catch (IOException ex) {
+                Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                Confirm.setVisible(true);
+            }
         }
     }//GEN-LAST:event_rmoptActionPerformed
 
@@ -2067,16 +2121,20 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_refreshoptActionPerformed
 
     private void updateoptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateoptActionPerformed
-        int choice = JOptionPane.showConfirmDialog(this, "System is pending to be updated.\nAre you sure?", "System update", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (choice == JOptionPane.YES_OPTION) {
-            apt("update");
+        if (isDpkgRunning() == false) {
+            int choice = JOptionPane.showConfirmDialog(this, "System is pending to be updated.\nAre you sure?", "System update", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                apt("update");
+            }
         }
     }//GEN-LAST:event_updateoptActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        int choice = JOptionPane.showConfirmDialog(this, "System is pending to be upgraded.\nAre you sure?", "System upgrade", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (choice == JOptionPane.YES_OPTION) {
-            apt("upgrade");
+        if (isDpkgRunning() == false) {
+            int choice = JOptionPane.showConfirmDialog(this, "System is pending to be upgraded.\nAre you sure?", "System upgrade", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                apt("upgrade");
+            }
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -2086,7 +2144,9 @@ public class main extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
-            exit();
+            if (isDpkgRunning() == false) {
+                exit();
+            }
         } catch (IOException ex) {
             Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
@@ -2095,7 +2155,9 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void addrepoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addrepoActionPerformed
-        apt("repoadd");
+        if (isDpkgRunning() == false) {
+            apt("repoadd");
+        }
     }//GEN-LAST:event_addrepoActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -2108,7 +2170,9 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void rmrepoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rmrepoActionPerformed
-        apt("reporm");
+        if (isDpkgRunning() == false) {
+            apt("reporm");
+        }
     }//GEN-LAST:event_rmrepoActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
