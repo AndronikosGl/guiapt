@@ -17,7 +17,7 @@ Apt Center is a lightweight GUI package manager for the APT backend written in J
 
 **App reliability and safety**
 
-- Once you try to exit the app through titlebar or by using the File>Exit guiapt option while an apt operation is running, you will be prompted for confirmation. If you insist on proceeding, you will be asked by pkexec to enter your password so the app can execute `dpkg --configure -a` to prevent any damage to the operating system
+- Once you try to exit the app through titlebar or by using the File>Exit guiapt option while an apt operation is running, you will be prompted for confirmation. If you insist on proceeding,the app will execute `dpkg --configure -a` to prevent any damage to the operating system
 - The app can block your action if another process is holding the dpkg lock and inform you about the process PID and lock file path. If both process are already running, the app will safely fail respecting the other process. 
 
 **App Theming**
