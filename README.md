@@ -13,6 +13,7 @@ Apt Center is a lightweight GUI package manager for the APT backend written in J
 - Options to search inside installed or available packages with the ability of filtering by name or description
 - Option to quit the app
 - Option to control the maximum number of packages to be listed by default from 100 up to 500. (Your choice is saved in the app's preferences)
+- Option to remove or add a repository by name
 
 **App reliability and safety**
 
